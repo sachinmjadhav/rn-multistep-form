@@ -1,52 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   Text,
   View,
-  TextInput,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import Input from '../components/Input';
+import MultiInput from '../components/Input/MultiInput';
 
 import { colors } from '../constants/colors';
 import { addHealth } from '../store/actions';
 import { getHealthData } from '../store/selectors';
 import { simulateAsyncCall } from '../utils';
-
-const renderInput = (placeholder, styles, onBlur, onChange, value, ...rest) => (
-  <TextInput
-    placeholder={placeholder}
-    placeholderTextColor={colors.placeholder}
-    style={styles}
-    onBlur={onBlur}
-    onChangeText={(val) => onChange(val)}
-    value={value}
-    {...rest[0]}
-  />
-);
-
-const renderError = (error) =>
-  error ? (
-    <Text style={{ fontSize: 10, color: 'red', paddingHorizontal: 10 }}>
-      This is required.
-    </Text>
-  ) : (
-    <View style={{ height: 14, width: '100%' }} />
-  );
-
-const boxStyles = (error) => ({
-  flex: 1,
-  backgroundColor: 'white',
-  width: '100%',
-  alignSelf: 'center',
-  marginTop: 25,
-  borderTopWidth: 1,
-  borderBottomWidth: 1,
-  borderColor: error ? 'red' : colors.grey,
-});
 
 const Health = (props) => {
   const [loading, setLoading] = useState(false);
@@ -117,59 +86,29 @@ const Health = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView {...props}>
+      <ScrollView>
         <View style={styles.container}>
           <Text style={styles.title}>Now, a closer look</Text>
-          <View style={boxStyles(errors?.heightFeet || errors?.heightInches)}>
-            <Text style={{ ...styles.formTitle, borderBottomWidth: 1 }}>
-              Height (ft./in.)
-            </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) =>
-                  renderInput('ft', styles.height, onBlur, onChange, value, {
-                    maxLength: 1,
-                    keyboardType: 'numeric',
-                  })
-                }
-                name="heightFeet"
-                rules={{ required: true }}
-                defaultValue={defaultData?.heightFeet}
-              />
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) =>
-                  renderInput('in', styles.height, onBlur, onChange, value, {
-                    maxLength: 2,
-                    keyboardType: 'numeric',
-                  })
-                }
-                name="heightInches"
-                rules={{ required: true }}
-                defaultValue={defaultData?.heightInches}
-              />
-            </View>
-          </View>
-          {renderError(errors?.heightFeet || errors?.heightInches)}
-          <View style={boxStyles(errors?.weight)}>
-            <Text style={{ ...styles.formTitle, borderBottomWidth: 1 }}>
-              Weight (Kgs)
-            </Text>
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) =>
-                renderInput('Kgs', styles.input, onBlur, onChange, value, {
-                  maxLength: 3,
-                  keyboardType: 'numeric',
-                })
-              }
-              name="weight"
-              rules={{ required: true }}
-              defaultValue={defaultData?.weight}
-            />
-          </View>
-          {renderError(errors?.weight)}
+          <MultiInput
+            title="Height (ft./in.)"
+            placeholders={['ft', 'in']}
+            control={control}
+            names={['heightFeet', 'heightInches']}
+            inputProps={[{ maxLength: 1 }, { maxLength: 2 }]}
+            inputStyles={styles.height}
+            error={errors?.heightFeet || errors?.heightInches}
+            data={defaultData}
+          />
+          <Input
+            title="Weight (Kgs)"
+            placeholder="Kgs"
+            control={control}
+            name="weight"
+            inputStyles={styles.input}
+            error={errors?.weight}
+            data={defaultData?.weight}
+            keyboardType="numeric"
+          />
           <View style={{ ...styles.box, marginBottom: 20 }}>
             <Text style={styles.formTitle}>
               Have you used any tobacco products in last 5 years?

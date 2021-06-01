@@ -14,6 +14,13 @@ import { clearState } from '../store/actions';
 import { getAllData } from '../store/selectors';
 import { simulateAsyncCall } from '../utils';
 
+const Item = ({ name, value, style }) => (
+  <View style={{ ...styles.keyContainer, ...style }}>
+    <Text style={styles.key}>{name}</Text>
+    <Text style={styles.value}>{value}</Text>
+  </View>
+);
+
 const Confirm = (props) => {
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +62,7 @@ const Confirm = (props) => {
     );
   }, [onPreviousStep, loading]);
 
-  const renderNextButton = useCallback(() => {
+  const renderSubmitButton = useCallback(() => {
     return loading ? (
       <ActivityIndicator color={colors.primary} />
     ) : (
@@ -71,44 +78,31 @@ const Confirm = (props) => {
         <View styles={styles.container}>
           <Text style={styles.title}>Confirm your details</Text>
           <View style={styles.detailsContainer}>
-            <View style={styles.keyContainer}>
-              <Text style={styles.key}>Full Name: </Text>
-              <Text style={styles.value}>{`${firstName} ${lastName}`}</Text>
-            </View>
-            <View style={styles.keyContainer}>
-              <Text style={styles.key}>Gender: </Text>
-              <Text style={styles.value}>
-                {gender === 'male' ? 'Male' : 'Female'}
-              </Text>
-            </View>
-            <View style={styles.keyContainer}>
-              <Text style={styles.key}>Date of Birth: </Text>
-              <Text
-                style={
-                  styles.value
-                }>{`${dob?.date} / ${dob?.month} / ${dob?.year}`}</Text>
-            </View>
-            <View style={styles.keyContainer}>
-              <Text style={styles.key}>Height: </Text>
-              <Text
-                style={
-                  styles.value
-                }>{`${height.feet} ft. ${height?.inches} in.`}</Text>
-            </View>
-            <View style={styles.keyContainer}>
-              <Text style={styles.key}>Weight: </Text>
-              <Text style={styles.value}>{`${weight} Kgs`}</Text>
-            </View>
-            <View style={{ ...styles.keyContainer, borderBottomWidth: 0 }}>
-              <Text style={styles.key}>Tobacco Consumption: </Text>
-              <Text style={styles.value}>{tobacco ? 'Yes' : 'No'}</Text>
-            </View>
+            <Item name="Full Name:" value={`${firstName} ${lastName}`} />
+            <Item
+              name="Gender:"
+              value={gender === 'male' ? 'Male' : 'Female'}
+            />
+            <Item
+              name="Date of Birth:"
+              value={`${dob?.date} / ${dob?.month} / ${dob?.year}`}
+            />
+            <Item
+              name="Height:"
+              value={`${height.feet}ft. ${height?.inches}in.`}
+            />
+            <Item name="Weight:" value={`${weight}Kgs`} />
+            <Item
+              name="Tobacco Consumption:"
+              value={tobacco ? 'Yes' : 'No'}
+              style={{ borderBottomWidth: 0 }}
+            />
           </View>
         </View>
       </ScrollView>
       <View style={styles.btnContainer}>
         <View style={styles.prevBtn}>{renderPreviousButton()}</View>
-        <View style={styles.nextBtn}>{renderNextButton()}</View>
+        <View style={styles.nextBtn}>{renderSubmitButton()}</View>
       </View>
     </View>
   );

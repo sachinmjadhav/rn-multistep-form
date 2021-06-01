@@ -1,51 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   Text,
   View,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import Input from '../components/Input';
+import MultiInput from '../components/Input/MultiInput';
 import { colors } from '../constants/colors';
 import { addBasics } from '../store/actions';
 import { getBasicsData } from '../store/selectors';
 import { simulateAsyncCall } from '../utils';
-
-const renderInput = (placeholder, styles, onBlur, onChange, value, ...rest) => (
-  <TextInput
-    placeholder={placeholder}
-    placeholderTextColor={colors.placeholder}
-    style={styles}
-    onBlur={onBlur}
-    onChangeText={(val) => onChange(val)}
-    value={value}
-    {...rest[0]}
-  />
-);
-
-const renderError = (error) =>
-  error ? (
-    <Text style={{ fontSize: 10, color: 'red', paddingHorizontal: 10 }}>
-      This is required.
-    </Text>
-  ) : (
-    <View style={{ height: 14, width: '100%' }} />
-  );
-
-const boxStyles = (error) => ({
-  flex: 1,
-  backgroundColor: 'white',
-  width: '100%',
-  alignSelf: 'center',
-  marginTop: 25,
-  borderTopWidth: 1,
-  borderBottomWidth: 1,
-  borderColor: error ? 'red' : colors.grey,
-});
 
 const Basics = (props) => {
   const [loading, setLoading] = useState(false);
@@ -95,84 +64,37 @@ const Basics = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView {...props}>
+      <ScrollView>
         <View style={styles.container}>
           <Text style={styles.title}>Let's start with the basics</Text>
-          <View style={boxStyles(errors?.firstName)}>
-            <Text style={{ ...styles.formTitle, borderBottomWidth: 1 }}>
-              First Name
-            </Text>
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) =>
-                renderInput('First Name', styles.input, onBlur, onChange, value)
-              }
-              name="firstName"
-              rules={{ required: true }}
-              defaultValue={defaultData?.firstName}
-            />
-          </View>
-          {renderError(errors?.firstName)}
-          <View style={boxStyles(errors?.lastName)}>
-            <Text style={{ ...styles.formTitle, borderBottomWidth: 1 }}>
-              Last Name
-            </Text>
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) =>
-                renderInput('Last Name', styles.input, onBlur, onChange, value)
-              }
-              name="lastName"
-              rules={{ required: true }}
-              defaultValue={defaultData?.lastName}
-            />
-          </View>
-          {renderError(errors?.lastName)}
-          <View
-            style={boxStyles(errors?.date || errors?.month || errors?.year)}>
-            <Text style={{ ...styles.formTitle, borderBottomWidth: 1 }}>
-              Date of birth
-            </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) =>
-                  renderInput('dd', styles.dob, onBlur, onChange, value, {
-                    maxLength: 2,
-                    keyboardType: 'numeric',
-                  })
-                }
-                name="date"
-                rules={{ required: true }}
-                defaultValue={defaultData?.date}
-              />
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) =>
-                  renderInput('mm', styles.dob, onBlur, onChange, value, {
-                    maxLength: 2,
-                    keyboardType: 'numeric',
-                  })
-                }
-                name="month"
-                rules={{ required: true }}
-                defaultValue={defaultData?.month}
-              />
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) =>
-                  renderInput('yyyy', styles.dob, onBlur, onChange, value, {
-                    maxLength: 4,
-                    keyboardType: 'numeric',
-                  })
-                }
-                name="year"
-                rules={{ required: true, minLength: 4 }}
-                defaultValue={defaultData?.year}
-              />
-            </View>
-          </View>
-          {renderError(errors?.date || errors?.month || errors?.year)}
+          <Input
+            title="First Name"
+            placeholder="First Name"
+            control={control}
+            name="firstName"
+            inputStyles={styles.input}
+            error={errors?.firstName}
+            data={defaultData?.firstName}
+          />
+          <Input
+            title="Last Name"
+            placeholder="Last Name"
+            control={control}
+            name="lastName"
+            inputStyles={styles.input}
+            error={errors?.lastName}
+            data={defaultData?.lastName}
+          />
+          <MultiInput
+            title="Date of birth"
+            placeholders={['dd', 'mm', 'yyyy']}
+            control={control}
+            names={['date', 'month', 'year']}
+            inputProps={[{ maxLength: 2 }, { maxLength: 2 }, { maxLength: 4 }]}
+            inputStyles={styles.dob}
+            error={errors?.date || errors?.month || errors?.year}
+            data={defaultData}
+          />
           <View style={{ ...styles.box, marginBottom: 20 }}>
             <Text style={styles.formTitle}>Gender</Text>
             <View style={styles.buttonContainer}>
